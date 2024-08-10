@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: freshrss-deployment
+  namespace: freshrss
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: freshrss
+  template:
+    metadata:
+      labels:
+        app: freshrss
+    spec:
+      volumes:
+        - name: freshrss-pvc-data
+          persistentVolumeClaim:
+            claimName: freshrss-pvc-data
+        - name: freshrss-pvc-extensions
+          persistentVolumeClaim:
+            claimName: freshrss-pvc-extensions
+      containers:
+        - name: freshrss
+          image: freshrss/freshrss:1.24.1
+          env:
+            - name: TZ
+              value: "Europe/Berlin"
+            - name: CRON_MIN
+              value: "1,31"
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /var/www/FreshRSS/data
+              name: freshrss-pvc-data
+            - mountPath: /var/www/FreshRSS/extensions
+              name: freshrss-pvc-extensions
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"

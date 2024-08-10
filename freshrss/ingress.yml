@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+    kubernetes.io/ingress.class: traefik
+  name: freshrss-ingress
+  namespace: freshrss
+  labels:
+    name: freshrss
+spec:
+  rules:
+    - host: freshrss.trigx.trading
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: freshrss-svc
+                port:
+                  number: 80
